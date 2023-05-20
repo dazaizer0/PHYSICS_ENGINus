@@ -5,7 +5,7 @@
 using namespace std;
 
 struct Vector2DM {
-	double x, y;
+	double x = 0, y = 0;
 
 	Vector2DM() { }
 
@@ -88,7 +88,7 @@ Vector2DM operator /(Vector2DM one, double two) {
 #pragma endregion
 
 struct Vector3DM {
-	double x, y, z;
+	double x = 0, y = 0, z = 0;
 
 	Vector3DM() { }
 
@@ -181,7 +181,7 @@ Vector3DM operator /(Vector3DM one, double two) {
 #pragma endregion
 
 struct QuaternionM {
-	double r;
+	double r = 0;
 	Vector3DM vectorPart;
 
 	QuaternionM() {}
@@ -198,7 +198,7 @@ struct QuaternionM {
 
 	inline static QuaternionM& AngleAxis_Quat(double angle, const Vector3DM& axis) {
 		QuaternionM quat = QuaternionM(cos(angle), axis);
-		//quat.vectorPart.Normalize();
+		quat.vectorPart.Normalize();
 		quat.vectorPart = quat.vectorPart * sin(angle);
 		return quat;
 	}

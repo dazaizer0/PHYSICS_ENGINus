@@ -48,7 +48,6 @@ void Test1() {
 		chrono::time_point start = chrono::high_resolution_clock::now();
 		chrono::time_point stop = chrono::high_resolution_clock::now();
 
-		int d;
 		start = chrono::high_resolution_clock::now();
 		for (int d = 0; d < 100000; d++)
 			CalcSCtrad(a);
@@ -73,6 +72,126 @@ void Test1() {
 	}
 }
 
+long double Facto(int arg)
+{
+	// highest value a LONG DOUBLE can hold is 170! =~ 7.2574156153079940e+306
+	// after that cout writes "inf" ))))
+	if (arg < 0) return 0;
+	if (arg < 2) return 1;
+
+	long double ret = 2;
+	for (int i = 3; i <= arg; i++) {
+		ret *= i;
+	}
+	return ret;
+}
+
+
+const int MySineArrLen = 10; // in last expression n = 10
+
+double MySine(double ang) {
+	double x, factor = 1, sine = 0;
+	double ps[MySineArrLen + 1]; // expressions from 0 to 10, 11 in total
+
+	x = ang;
+
+	ps[0] = x;
+
+	for (int i = 1; i <= MySineArrLen; i++) {
+		x *= ang * ang;
+		factor *= 2 * i * (2 * i + 1);
+
+		ps[i] = x / factor;
+	}
+
+	for (int i = MySineArrLen; i >= 0; i--)
+	{
+		if (i % 2 == 1) sine -= ps[i];
+		else sine += ps[i]; 
+	}
+
+	return sine;
+}
+
+double MySine(double ang, int acc) {
+	// forward version
+	/*long double x, factor = 1, sine = 0;
+	x = ang;
+	sine += x;
+	for (int i = 1; i <= acc; i++)
+	{
+		x *= ang * ang;
+		factor *= 2 * i * (2 * i + 1);
+		if (i % 2 == 1) sine -= x / factor;
+		else sine += x / factor;
+	}
+	return (double)sine;*/
+
+	// backward version (arrays)
+	double x, factor = 1, sine = 0;
+	double* ps = (double*)malloc((acc + 1) * sizeof(double));
+	int psn = 0;
+
+	x = ang;
+
+	*ps = x;
+
+	for (int i = 1; i <= acc; i++) {
+		x *= ang * ang;
+		factor *= 2 * i * (2 * i + 1);
+
+		ps++; psn++;
+		*ps = x / factor;
+	}
+
+	for (int i = acc; i >= 0; i--)
+	{
+		if (i % 2 == 1) sine -= *ps;
+		else sine += *ps;
+		ps--; psn--;
+	}
+	ps++; psn++;
+	free(ps);
+	return sine;
+}
+
+void Test2()
+{
+	//	       i
+	//sin(x) = ∑ (-1)^n * x^(2n+1) / (2n+1)!
+	//	      n=0
+
+	//	       i
+	//cos(x) = ∑ (-1)^n * x^(2n) / (2n)!
+	//	      n=0
+
+	double angle, accuracy;
+	cout << "Give angle in deg.: ";
+	cin >> angle;
+	cout << endl << "give accuracy as int: ";
+	cin >> accuracy;
+
+	angle *= M_PI * 2;
+	angle /= 360;
+
+	/*
+	for(int i = 0; i < accuracy; i++)
+	{
+		cout << endl << "Das ist meine Sine(acc = " << i << "): " << MySine(angle, i);
+	}
+	*/
+	// acc. is 10(actually Arr. Len. is 11) for angle ∊ [0°, 90°]
+
+	for (int i = 0; i <= 90; i++)
+	{
+		cout << endl << "Das ist meine Sine(nr. " << i << ", acc = " << (int)accuracy << ") : " << MySine(i * M_PI * 2 / 360) << endl;
+		cout << "Das ist ihre Sine:                    " << sin(i * M_PI * 2 / 360) << endl;
+	}
+
+	cout << endl << "Das ist meine Sine(acc = " << (int)accuracy << "): " << MySine(angle, accuracy) << endl;
+	cout << "Das ist ihre Sine:            " << sin(angle) << endl;
+}
+
 
 int main()
 {
@@ -83,10 +202,9 @@ int main()
 	// randoms may always be useful
 	srand(time(NULL));
 
-
+	Test2();
 
 	//ending section
 	cout << endl << "Enter to close";
-	getchar();
-	return 0;
+	return 0 * getchar();
 }
